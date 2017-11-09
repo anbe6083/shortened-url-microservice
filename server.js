@@ -14,21 +14,19 @@ app.get("/", function (request, response) {
 app.get("/*", function (request, response) {
   var stringQuery = request.params[0];
   
-  response.json( isUrl(stringQuery) );
+  isUrl(stringQuery, response);
   });
 
-function isUrl(stringQuery) {
+function isUrl(stringQuery, response) {
   if( validUrl.isUri(stringQuery) ) {
-    console.log("goodurl");
     insertIntoDb(stringQuery);
-    return {
-      original_url: stringQuery,
-      shortened_url: 'test2'
-      }
+    getFromDb(stringQuery, response);
   } else {
-    return {
-      error: "Query doesn't follow the http://www.example.com format."
-    }
+    response.json(
+      {
+        error: "Query doesn't follow the http://www.example.com format."
+      }
+    );
   }
 }
 
@@ -37,32 +35,42 @@ function isUrl(stringQuery) {
 * Description: If the url is not in the collection, the url will be updated instead of inserting a duplicate. 
 */
 function insertIntoDb( stringUrl ) {
+  
   mongo.connect(dbUrl, (err, db) => {
   if(err) throw err;
   var collection = db.collection('urls');
   var json = {
-      original_url: stringUrl,
+      original_url: "test1",
       shortened_url: 'test2'
       }
   collection.update(
     json, json, { upsert: true }
-  )
+  );
   db.close();
   
 }) 
 }
 
-function getFromDb( url ) {
-    mongo.connect( dbUrl, (err, db) => {
-      if(err) {throw err}
-      else {
-        var collection = db.collection('urls');
-        return collection.find();
-      }
-      
-    } )
+/*
+* @param: stringQuery : The user's entered URL
+* @param response: HTTP resposne to the server
+* Description: Find the URL from the collection 'urls' and send a response to he server in json format
+*/
+function getFromDb( stringQuery, response ) {
+  mongo.connect(dbUrl, (err, db) => {
+  if(err) throw err;
+  var collection = db.collection('urls');
+  
+  collection.findOne( {original_url: stringQuery} , function(err, doc) {
+    response.json( doc );
+  } )
+  db.close();
+  
+}) 
   
 }
+
+
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
