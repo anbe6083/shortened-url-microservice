@@ -1,5 +1,5 @@
 # URL-Shortener Microservice
-=========================
+
 https://url-shortener-ab.glitch.me/
 
 Allows the user to shorten a URL. 
