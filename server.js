@@ -18,18 +18,18 @@ app.get("/", function (request, response) {
 app.get("/:id", function (request, response) {
   var id = request.params.id;
   
-  getShort(id, response);
+  getShort(id, response, request);
   });
 
 app.get("/new/*", function (request, response) {
   var stringQuery = request.params[0];
   
-  isUrl(stringQuery, response);
+  isUrl(stringQuery, response, request);
   });
 
-function isUrl(stringQuery, response) {
+function isUrl(stringQuery, response, request) {
   if( validUrl.isUri(stringQuery)) {
-      insertIntoDb(stringQuery);
+      insertIntoDb(stringQuery, request);
       getFromDb(stringQuery, response);
   } else {
       response.json(
@@ -44,7 +44,7 @@ function isUrl(stringQuery, response) {
 * @param: stringUrl: Url taken in from the query in the address bar
 * Description: If the url is not in the collection, the url will be updated instead of inserting a duplicate. 
 */
-function insertIntoDb( stringUrl ) {
+function insertIntoDb( stringUrl, request ) {
   
   mongo.connect(dbUrl, (err, db) => {
   if(err) throw err;
@@ -52,7 +52,7 @@ function insertIntoDb( stringUrl ) {
   var json = { 
       count: +count++,
       original_url: stringUrl,
-      shortened_url: "https://url-shortener-ab.glitch.me/" +shortid.generate() 
+      shortened_url: request.protocol + "://" +request.get('host') +"/" +shortid.generate() 
       }
   collection.update(
     json, json, { upsert: true }
@@ -73,7 +73,7 @@ function getFromDb( stringQuery, response ) {
   var collection = db.collection('urls');
   
   collection.findOne( {original_url: stringQuery} , function(err, doc) {
-      response.json( doc );
+      response.send( doc );
     } );
   db.close();
   
@@ -81,17 +81,25 @@ function getFromDb( stringQuery, response ) {
   
 }
 
-function getShort( stringQuery, response ) {
+/*
+* @param stringQuery: the uniqueID for the shortened URL
+* Redirects the user to the original website
+*/
+
+function getShort( stringQuery, response, request ) {
   mongo.connect(dbUrl, (err, db) => {
-  if(err) throw err;
-  var collection = db.collection('urls');
+  if(err) {
+    throw err;
+    db.close();
+  } else {
+    var collection = db.collection('urls');
   
-  collection.findOne( {shortened_url: "https://url-shortener-ab.glitch.me/" +stringQuery} , function(err, doc) {
-    response.redirect( doc.original_url );
-  } )
-  db.close();
-  
-}) 
+    collection.findOne( {shortened_url: request.protocol + "://" +request.get('host') +"/" +stringQuery} , function(err, doc) {
+      response.redirect( doc.original_url );
+    } )
+    db.close();
+    }
+ });
   
 }
 
@@ -99,3 +107,4 @@ function getShort( stringQuery, response ) {
 var listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
+ 
