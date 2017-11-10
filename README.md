@@ -1,27 +1,16 @@
-Welcome to the Glitch BETA
+#URL-Shortener Microservice
 =========================
+https://url-shortener-ab.glitch.me/
 
-Click `Show` in the header to see your app live. Updates to your code will instantly deploy and update live.
+Allows the user to shorten a URL. 
 
-**Glitch** is the friendly commmunity where you'll build the app of your dreams. Glitch lets you instantly create, remix, edit, and host an app, bot or site, and you can invite collaborators or helpers to simultaneously edit code with you.
+##Shorten a URL
 
-Find out more [about Glitch](https://glitch.com/about).
+Here's how to shorten http://www.google.com: 
+'https://url-shortener-ab.glitch.me/new/http://www.google.com
 
+Result: 
+'http://url-shortener-ab.glitch.me/SytYKFzJf
 
-Your Project
-------------
+By entering the shortened URl into the address bar, the user will be redirected to the original URL. 
 
-On the front-end,
-- edit `public/client.js`, `public/style.css` and `views/index.html`
-- drag in `assets`, like images or music, to add them to your project
-
-On the back-end,
-- your app starts at `server.js`
-- add frameworks and packages in `package.json`
-- safely store app secrets in `.env` (nobody can see this but you and people you invite)
-
-
-Made by [Fog Creek](https://fogcreek.com/)
--------------------
-
-\ ゜o゜)ノ
