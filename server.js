@@ -2,27 +2,37 @@
 var express = require('express');
 var app = express();
 var validUrl = require('valid-url');
+var shortid = require('shortid');
 var mongo = require('mongodb').MongoClient;
 var dbUrl = 'mongodb://stepup2stepout:liris72259@ds155315.mlab.com:55315/urlshortener_ab';
-app.use(express.static('public'));
+var count = 1;
+var alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+var base = alphabet.length; // base is the length of the alphabet (58 in this case)
 
+app.use(express.static('public'));
 
 app.get("/", function (request, response) {
   response.sendFile(__dirname + '/views/index.html');
 });
 
-app.get("/*", function (request, response) {
+app.get("/:id", function (request, response) {
+  var id = request.params.id;
+  
+  getShort(id, response);
+  });
+
+app.get("/new/*", function (request, response) {
   var stringQuery = request.params[0];
   
   isUrl(stringQuery, response);
   });
 
 function isUrl(stringQuery, response) {
-  if( validUrl.isUri(stringQuery) ) {
-    insertIntoDb(stringQuery);
-    getFromDb(stringQuery, response);
+  if( validUrl.isUri(stringQuery)) {
+      insertIntoDb(stringQuery);
+      getFromDb(stringQuery, response);
   } else {
-    response.json(
+      response.json(
       {
         error: "Query doesn't follow the http://www.example.com format."
       }
@@ -39,9 +49,10 @@ function insertIntoDb( stringUrl ) {
   mongo.connect(dbUrl, (err, db) => {
   if(err) throw err;
   var collection = db.collection('urls');
-  var json = {
-      original_url: "test1",
-      shortened_url: 'test2'
+  var json = { 
+      count: +count++,
+      original_url: stringUrl,
+      shortened_url: "https://url-shortener-ab.glitch.me/" +shortid.generate() 
       }
   collection.update(
     json, json, { upsert: true }
@@ -62,15 +73,27 @@ function getFromDb( stringQuery, response ) {
   var collection = db.collection('urls');
   
   collection.findOne( {original_url: stringQuery} , function(err, doc) {
-    response.json( doc );
-  } )
+      response.json( doc );
+    } );
   db.close();
   
 }) 
   
 }
 
-
+function getShort( stringQuery, response ) {
+  mongo.connect(dbUrl, (err, db) => {
+  if(err) throw err;
+  var collection = db.collection('urls');
+  
+  collection.findOne( {shortened_url: "https://url-shortener-ab.glitch.me/" +stringQuery} , function(err, doc) {
+    response.redirect( doc.original_url );
+  } )
+  db.close();
+  
+}) 
+  
+}
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
