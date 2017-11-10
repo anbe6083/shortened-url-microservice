@@ -82,7 +82,8 @@ function getFromDb( stringQuery, response ) {
 }
 
 /*
-*
+* @param stringQuery: the uniqueID for the shortened URL
+* Redirects the user to the original website
 */
 
 function getShort( stringQuery, response, request ) {
