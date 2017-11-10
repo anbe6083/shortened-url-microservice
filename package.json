@@ -8,7 +8,10 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "valid-url": "1.0.1",
+    "shortid": "2.2.8",
+    "mongodb": "2.2.33"
   },
   "engines": {
     "node": "8.x"
