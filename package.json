@@ -1,11 +1,8 @@
 {
-  "//1": "describes your app and its dependencies",
-  "//2": "https://docs.npmjs.com/files/package.json",
-  "//3": "updating this file will download and update your packages",
 
-  "name": "my-glitch-app",
-  "version": "0.0.1",
-  "description": "What am I about?",
+  "name": "Url-shortener-microservice",
+  "version": "1.0.1",
+  "description": "Shortens a URL that the user passes to the application",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -17,12 +14,14 @@
     "node": "8.x"
   },
   "repository": {
-    "url": "https://glitch.com/edit/#!/welcome-project"
+    "url": "https://glitch.com/edit/#!/url-shortener-ab?path=README.md:1:0"
   },
   "license": "MIT",
   "keywords": [
     "node",
     "glitch",
-    "express"
+    "express", 
+    "url",
+    "shorten"
   ]
 }
