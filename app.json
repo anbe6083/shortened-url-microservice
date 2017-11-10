@@ -1,0 +1,7 @@
+{
+	"name": "URL Shortener Microservice",
+	"description": "Shortens URLs for the user",
+	"repository:" "https://github.com/anbe6083/shortened-url-microservice",
+	"keywords": ["url", "shorten"],
+
+}
